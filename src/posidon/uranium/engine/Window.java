@@ -84,11 +84,10 @@ public class Window {
         GLFW.glfwPollEvents();
     }
     public void swapBuffers() { GLFW.glfwSwapBuffers(window); }
-    public boolean shouldClose() { return GLFW.glfwWindowShouldClose(window); }
+    public boolean isOpen() { return !GLFW.glfwWindowShouldClose(window); }
     public void kill() {
         input.kill();
         resizeListener.free();
-        GLFW.glfwWindowShouldClose(window);
         GLFW.glfwDestroyWindow(window);
         GLFW.glfwTerminate();
     }

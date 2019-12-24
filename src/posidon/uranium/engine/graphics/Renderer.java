@@ -1,6 +1,7 @@
 package posidon.uranium.engine.graphics;
 
 import posidon.potassium.universe.block.Block;
+import posidon.uranium.content.Textures;
 import posidon.uranium.engine.Window;
 import posidon.uranium.engine.maths.Matrix4f;
 import posidon.uranium.engine.maths.Vec3i;
@@ -17,6 +18,7 @@ import posidon.uranium.engine.ui.View;
 import posidon.uranium.main.Globals;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Renderer {
     private static Shader mainShader;
@@ -25,7 +27,7 @@ public class Renderer {
     private static final ConcurrentHashMap<Model, List<GameObject>> objects = new ConcurrentHashMap<>();
     public static final ArrayList<View> ui = new ArrayList<>();
     public static final ConcurrentHashMap<Vec3i, Chunk> chunks = new ConcurrentHashMap<>();
-    private static List<Tuple<Tuple<Vec3i, Vec3i>, Block>> blockQueue = new ArrayList<>();
+    private static ConcurrentLinkedQueue<Tuple<Tuple<Vec3i, Vec3i>, Block>> blockQueue = new ConcurrentLinkedQueue<>();
     public static Matrix4f viewMatrix = Matrix4f.view(Camera.position, Camera.rotation);
 
     public static void init() {
@@ -99,35 +101,11 @@ public class Renderer {
                 view.render(uiShader);
     }
 
-    public static boolean isInFieldOfView(Vec3i posRelToCam) {
-        float rotY = Camera.rotation.y - 180;
-        double cos = Math.cos(Math.toRadians(rotY));
-        double sin = Math.sin(Math.toRadians(rotY));
-        double x = posRelToCam.x * cos - posRelToCam.z * sin;
-        double z = posRelToCam.z * cos + posRelToCam.x * sin;
-        double z2 = z * Math.cos(Math.toRadians(Camera.rotation.x)) + posRelToCam.y * Math.sin(Math.toRadians(Camera.rotation.x));
-        double y = posRelToCam.y * Math.cos(Math.toRadians(Camera.rotation.x)) - z * Math.sin(Math.toRadians(Camera.rotation.x));
-        double maxXOffset = z * Window.width() / Window.height();
-        return z > 0 && x < maxXOffset && x > -maxXOffset && y < z2 && y > -z2;
-               //Math.abs(Math.toDegrees(Math.atan(posRelToCam.y / Math.sqrt(posRelToCam.x*posRelToCam.x + posRelToCam.z*posRelToCam.z))) - Camera.rotation.x) < 35;
-    }
-
-    private static double a(double a) {
-        System.out.println(a);
-        return a;
-    }
-
-    public static void tick() {
-        /*for (Model model : objects.keySet()) {
-            List<GameObject> batch = objects.get(model);
-            for (GameObject obj : batch) obj.tick();
-        }*/
-        List<Tuple<Tuple<Vec3i, Vec3i>, Block>> tmpBlockQueue = blockQueue;
-        blockQueue = new ArrayList<>();
-        tmpBlockQueue.removeIf(tuple -> {
-            try { actuallySetBlock(tuple.get1(), tuple.get0()); return true; } catch (Exception e) { e.printStackTrace(); }
-            return false;
-        });
+    public static void updateBlocks() {
+        for (int i = 0; i < blockQueue.size(); i++) {
+            Tuple<Tuple<Vec3i, Vec3i>, Block> tuple = blockQueue.poll();
+            actuallySetBlock(tuple.get1(), tuple.get0());
+        }
     }
 
     public static void bg() {
@@ -171,5 +149,6 @@ public class Renderer {
         blockQueue.clear();
         ui.clear();
         Cube.kill();
+        Textures.clear();
     }
 }

@@ -18,7 +18,5 @@ void main() {
     gl_Position = projection * positionRelativeToCam;
     passTextureCoord = textureCoords;
 
-    float distance = length(positionRelativeToCam.xyz);
-    visibility = exp(-pow((distance * DENSITY), GRADIENT));
-    visibility = clamp(visibility, 0.0, 1.0);
+    visibility = min(exp(-pow((length(positionRelativeToCam.xyz) * DENSITY), GRADIENT)), 1.0);
 }

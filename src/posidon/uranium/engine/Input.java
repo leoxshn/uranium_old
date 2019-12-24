@@ -17,9 +17,18 @@ public class Input {
         keyListener = new GLFWKeyCallback() {
             @Override
             public void invoke(long window, int key, int scanCode, int action, int mods) {
-                keys[key] = (action != GLFW.GLFW_RELEASE);
-                if (key == GLFW.GLFW_KEY_F11) w.setFullscreen(!w.isFullscreen());
-                else if (key == GLFW.GLFW_KEY_ESCAPE) w.setMouseLocked(false);
+                try {
+                    keys[key] = (action != GLFW.GLFW_RELEASE);
+                    System.out.println(action);
+                    switch (key) {
+                        case GLFW.GLFW_KEY_F11:
+                            w.setFullscreen(!w.isFullscreen());
+                            break;
+                        case GLFW.GLFW_KEY_ESCAPE:
+                            w.setMouseLocked(false);
+                            break;
+                    }
+                } catch (Exception e) { e.printStackTrace(); }
             }
         };
 
@@ -57,6 +66,7 @@ public class Input {
         keyListener.free();
         cursorListener.free();
         mouseButtonListener.free();
+        scrollListener.free();
     }
 
     public static double getCurX() { return curX; }

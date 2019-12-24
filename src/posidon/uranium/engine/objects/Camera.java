@@ -12,7 +12,7 @@ import org.lwjgl.glfw.GLFW;
 public class Camera {
     public static Vec3f position;
     public static Vec2f rotation;
-    public static float moveSpeed = 0.5f, jumpHeight = 0.5f, sensitivity = 0.4f;
+    public static float moveSpeed, jumpHeight, sensitivity = 0.4f;
     private double oldCurX, oldCurY;
 
     public Camera(Vec3f position, Vec2f rotation) { Camera.position = position; Camera.rotation = rotation; }
@@ -20,9 +20,13 @@ public class Camera {
     public void tick() {
         double curX = Input.getCurX(), curY = Input.getCurY();
         Packet packet = null;
-        float movX = (float) Math.sin(Math.toRadians(rotation.y)) * moveSpeed;
-        float movZ = (float) Math.cos(Math.toRadians(rotation.y)) * moveSpeed;
-        boolean[] keys = new boolean[4];
+        float movX = 0, movZ = 0;
+        boolean[] keys = {
+                Input.isKeyDown(GLFW.GLFW_KEY_W),
+                Input.isKeyDown(GLFW.GLFW_KEY_S),
+                Input.isKeyDown(GLFW.GLFW_KEY_A),
+                Input.isKeyDown(GLFW.GLFW_KEY_D)
+        };
 
         float dx = (float) (curX - oldCurX);
         float dy = (float) (curY - oldCurY);
@@ -34,33 +38,43 @@ public class Camera {
         if (rotation.y > 360) rotation.y -= 360;
         else if (rotation.y < 0) rotation.y += 360;
 
-        if (Input.isKeyDown(GLFW.GLFW_KEY_W)) {
+        if (keys[0]) {
+            packet = new Packet();
+            movX = (float) Math.sin(Math.toRadians(rotation.y)) * moveSpeed;
+            movZ = (float) Math.cos(Math.toRadians(rotation.y)) * moveSpeed;
             position.x -= movX;
             position.z -= movZ;
-            packet = new Packet();
             packet.put("walk", rotation.y);
-            keys[0] = true;
             packet.put("keys", keys);
-        } if (Input.isKeyDown(GLFW.GLFW_KEY_S)) {
+        } if (keys[1]) {
+            if (packet == null) {
+                packet = new Packet();
+                movX = (float) Math.sin(Math.toRadians(rotation.y)) * moveSpeed;
+                movZ = (float) Math.cos(Math.toRadians(rotation.y)) * moveSpeed;
+            }
             position.x += movX;
             position.z += movZ;
-            if (packet == null) packet = new Packet();
             packet.put("walk", rotation.y);
-            keys[1] = true;
             packet.put("keys", keys);
-        } if (Input.isKeyDown(GLFW.GLFW_KEY_A)) {
+        } if (keys[2]) {
+            if (packet == null) {
+                packet = new Packet();
+                movX = (float) Math.sin(Math.toRadians(rotation.y)) * moveSpeed;
+                movZ = (float) Math.cos(Math.toRadians(rotation.y)) * moveSpeed;
+            }
             position.x -= movZ;
             position.z += movX;
-            if (packet == null) packet = new Packet();
             packet.put("walk", rotation.y);
-            keys[2] = true;
             packet.put("keys", keys);
-        } if (Input.isKeyDown(GLFW.GLFW_KEY_D)) {
+        } if (keys[3]) {
+            if (packet == null) {
+                packet = new Packet();
+                movX = (float) Math.sin(Math.toRadians(rotation.y)) * moveSpeed;
+                movZ = (float) Math.cos(Math.toRadians(rotation.y)) * moveSpeed;
+            }
             position.x += movZ;
             position.z -= movX;
-            if (packet == null) packet = new Packet();
             packet.put("walk", rotation.y);
-            keys[3] = true;
             packet.put("keys", keys);
         }
 

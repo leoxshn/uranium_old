@@ -2,6 +2,7 @@ package posidon.uranium.client;
 
 import posidon.potassium.packets.ChatMessage;
 import posidon.potassium.packets.ChunkUpdate;
+import posidon.potassium.packets.InitInfoPacket;
 import posidon.potassium.packets.Packet;
 import posidon.potassium.universe.block.Block;
 import posidon.uranium.engine.graphics.Renderer;
@@ -24,7 +25,7 @@ public class EventListener {
                 Camera.position = new Vec3f(pos[0], pos[1], pos[2]);
             }
         } else if (event instanceof ChunkUpdate) {
-            ChunkUpdate data = ((ChunkUpdate)event);
+            ChunkUpdate data = (ChunkUpdate) event;
             Block[] blocks = data.blocks;
             for (int i = 0, blocksLength = blocks.length; i < blocksLength; i++) {
                 Block block = blocks[i];
@@ -36,6 +37,14 @@ public class EventListener {
                 Vec3i chunkPos = new Vec3i(data.x, data.y, data.z);
                 Renderer.setBlock(block, posInChunk, chunkPos);
             }
+        } else if (event instanceof InitInfoPacket) {
+            InitInfoPacket packet = (InitInfoPacket) event;
+            Globals.time = packet.time;
+            Camera.position.x = packet.x;
+            Camera.position.y = packet.y;
+            Camera.position.z = packet.z;
+            Camera.moveSpeed = packet.moveSpeed;
+            Camera.jumpHeight = packet.jumpHeight;
         }
     }
 }

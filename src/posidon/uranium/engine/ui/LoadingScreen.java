@@ -15,14 +15,18 @@ public class LoadingScreen extends View {
         super.setBackgroundPath(path);
     }
 
-    public LoadingScreen() {
-        super(new Vec2f(0, 0), new Vec2f(2, 2), new Texture("res/textures/ui/loading.png"));
-    }
+    public LoadingScreen() {super(
+            new Vec2f(0, 0),
+            new Vec2f(2, 2),
+            new Texture("res/textures/ui/loading.png")
+    );}
 
     public void render(Shader shader) {
         background.bind();
         shader.setUniform("ambientLight", new Vec3f(1, 1, 1));
-        shader.setUniform("model", Matrix4f.transform(position, new Vec2f(size.x / Window.width() * Window.height(), size.y)));
+        if (Window.width() > Window.height())
+            shader.setUniform("model", Matrix4f.transform(position, new Vec2f(size.x / Window.width() * Window.height(), size.y)));
+        else shader.setUniform("model", Matrix4f.transform(position, new Vec2f(size.x, size.y / Window.height() * Window.width())));
         GL11.glDrawElements(GL11.GL_TRIANGLES, getMESH().vertexCount, GL11.GL_UNSIGNED_INT, 0);
     }
 }

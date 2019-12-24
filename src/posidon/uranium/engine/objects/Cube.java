@@ -1,6 +1,7 @@
 package posidon.uranium.engine.objects;
 
 import posidon.potassium.universe.block.Block;
+import posidon.uranium.content.Textures;
 import posidon.uranium.engine.graphics.Mesh;
 import posidon.uranium.engine.graphics.Renderer;
 import posidon.uranium.engine.graphics.Texture;
@@ -32,20 +33,14 @@ public class Cube {
         this.positionInChunk = positionInChunk;
         this.chunkPos = chunkPos;
         this.absolutePosition = Vec3i.sum(Vec3i.multiply(chunkPos, CHUNK_SIZE), positionInChunk);
-        if (!textures.containsKey(name)) {
-            Texture texture = new Texture("res/textures/block/" + name + ".png");
-            textures.put(name, texture);
-        }
         this.emission = block.emission;
         this.hardness = block.hardness;
         update();
     }
 
-    public Texture getTexture() { return textures.get(name); }
+    public Texture getTexture() { return Textures.blocks.get(name); }
 
     public static void kill() {
-        for (Texture texture : textures.values()) texture.delete();
-        textures.clear();
         meshes.clear();
     }
 
@@ -93,14 +88,19 @@ public class Cube {
     public Chunk getChunk() { return Renderer.chunks.get(chunkPos); }
 
     public void update() {
-        boolean[] s = new boolean[6];
-        s[2] = (positionInChunk.x == CHUNK_SIZE - 1 || getChunk().getCube(positionInChunk.x + 1, positionInChunk.y, positionInChunk.z) == null);
-        s[3] = (positionInChunk.x == 0 || getChunk().getCube(positionInChunk.x - 1, positionInChunk.y, positionInChunk.z) == null);
-        s[1] = (positionInChunk.y == CHUNK_SIZE - 1 || getChunk().getCube(positionInChunk.x, positionInChunk.y + 1, positionInChunk.z) == null);
-        s[4] = (positionInChunk.y == 0 || getChunk().getCube(positionInChunk.x, positionInChunk.y - 1, positionInChunk.z) == null);
-        s[0] = (positionInChunk.z == CHUNK_SIZE - 1 || getChunk().getCube(positionInChunk.x, positionInChunk.y, positionInChunk.z + 1) == null);
-        s[5] = (positionInChunk.z == 0 || getChunk().getCube(positionInChunk.x, positionInChunk.y, positionInChunk.z - 1) == null);
-        setSides(s);
+        try {
+            boolean[] s = new boolean[6];
+            s[2] = (positionInChunk.x == CHUNK_SIZE - 1 || getChunk().getCube(positionInChunk.x + 1, positionInChunk.y, positionInChunk.z) == null);
+            s[3] = (positionInChunk.x == 0 || getChunk().getCube(positionInChunk.x - 1, positionInChunk.y, positionInChunk.z) == null);
+            s[1] = (positionInChunk.y == CHUNK_SIZE - 1 || getChunk().getCube(positionInChunk.x, positionInChunk.y + 1, positionInChunk.z) == null);
+            s[4] = (positionInChunk.y == 0 || getChunk().getCube(positionInChunk.x, positionInChunk.y - 1, positionInChunk.z) == null);
+            s[0] = (positionInChunk.z == CHUNK_SIZE - 1 || getChunk().getCube(positionInChunk.x, positionInChunk.y, positionInChunk.z + 1) == null);
+            s[5] = (positionInChunk.z == 0 || getChunk().getCube(positionInChunk.x, positionInChunk.y, positionInChunk.z - 1) == null);
+            setSides(s);
+        } catch (Exception e) {
+            System.out.println("something weird going on here!");
+            setSides(new boolean[]{true, true, true, true, true, true});
+        }
     }
 
     private static final float[] vertices = new float[] {

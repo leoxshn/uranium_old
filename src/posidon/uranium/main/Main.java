@@ -1,6 +1,7 @@
 package posidon.uranium.main;
 
 import posidon.uranium.client.Client;
+import posidon.uranium.content.Textures;
 import posidon.uranium.engine.graphics.Renderer;
 import posidon.uranium.engine.maths.Vec2f;
 import posidon.uranium.engine.objects.Camera;
@@ -31,29 +32,31 @@ public class Main implements Runnable {
         boolean success = Client.start("localhost", 2512);
         if (!success) {
             loadingScreen.setBackgroundPath("res/textures/ui/couldnt_connect.png");
-            while (!window.shouldClose()) render();
+            while (window.isOpen()) render();
             kill();
         }
+        Textures.set(null);
+        long lastTime = System.nanoTime();
+        double delta = 0;
+        new Thread(new BackgroundThread()).start();
+        new Thread(new CameraThread()).start();
+        Renderer.updateBlocks();
         loadingScreen.visible = false;
 
         ////GUI///////////////////////////////////////
         new HotBar();
 
         ////LOOP//////////////////////////////////////
-        long lastTime = System.nanoTime();
-        double delta = 0;
-        new Thread(new BackgroundThread()).start();
-        while(!window.shouldClose() && running) {
+        while(window.isOpen() && running) {
             long now = System.nanoTime();
             delta += (now - lastTime) / ns;
             lastTime = now;
-            while(delta >= 1) {
-                if (delta < 15) Renderer.tick();
-                delta--;
-            }
             render();
+            if (delta > 6) {
+                Renderer.updateBlocks();
+                delta = 0;
+            }
         }
-        Main.running = false;
         kill();
         //////////////////////////////////////////////
     }
@@ -62,13 +65,28 @@ public class Main implements Runnable {
         @Override public void run() {
             long lastTime = System.nanoTime();
             double delta = 0;
-            while(!window.shouldClose() && running) {
+            while(running) {
                 long now = System.nanoTime();
                 delta += (now - lastTime) / ns;
                 lastTime = now;
                 while(delta >= 1) {
                     Renderer.bg();
                     Globals.tick();
+                    delta--;
+                }
+            }
+        }
+    }
+
+    private class CameraThread implements Runnable {
+        @Override public void run() {
+            long lastTime = System.nanoTime();
+            double delta = 0;
+            while(running) {
+                long now = System.nanoTime();
+                delta += (now - lastTime) / ns;
+                lastTime = now;
+                while(delta >= 1) {
                     camera.tick();
                     delta--;
                 }
@@ -83,6 +101,7 @@ public class Main implements Runnable {
     }
 
     private void kill() {
+        Main.running = false;
         window.kill();
         Renderer.kill();
         Client.kill();
