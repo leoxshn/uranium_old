@@ -1,46 +1,47 @@
-package posidon.uranium.engine.objects;
+package posidon.uranium.engine.objects
 
-import posidon.uranium.engine.Window;
-import posidon.uranium.engine.maths.Vec3i;
+import posidon.uranium.engine.Window
+import posidon.uranium.engine.maths.Vec3i
+import java.util.*
+import kotlin.math.cos
+import kotlin.math.sin
 
-import java.util.HashMap;
-import java.util.List;
+class Chunk(val position: Vec3i?) {
 
-public class Chunk {
-    public static final int CHUNK_SIZE = 12;
-    public static final int CHUNK_SIZE_CUBED = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
-    private Cube[] cubes = new Cube[CHUNK_SIZE_CUBED];
-    public Cube getCube(Vec3i pos) { return cubes[pos.x * CHUNK_SIZE * CHUNK_SIZE + pos.y * CHUNK_SIZE + pos.z]; }
-    public Cube getCube(int x, int y, int z) { return cubes[x * CHUNK_SIZE * CHUNK_SIZE + y * CHUNK_SIZE + z]; }
-    public void setCube(Cube cube, Vec3i pos) { cubes[pos.x * CHUNK_SIZE * CHUNK_SIZE + pos.y * CHUNK_SIZE + pos.z] = cube; }
-    public Cube[] getCubes() { return cubes; }
-    public final HashMap<boolean[], List<Cube>> cubesBySides = new HashMap<>();
-    private Vec3i chunkPos;
+    private val cubes = arrayOfNulls<Cube>(CHUNK_SIZE_CUBED)
 
-    public Chunk(Vec3i chunkPos) {
-        this.chunkPos = chunkPos;
+    fun getCube(pos: Vec3i?) = cubes[pos!!.x * CHUNK_SIZE * CHUNK_SIZE + pos.y * CHUNK_SIZE + pos.z]
+    fun getCube(x: Int, y: Int, z: Int) = cubes[x * CHUNK_SIZE * CHUNK_SIZE + y * CHUNK_SIZE + z]
+
+    fun setCube(cube: Cube?, pos: Vec3i?) {
+        cubes[pos!!.x * CHUNK_SIZE * CHUNK_SIZE + pos.y * CHUNK_SIZE + pos.z] = cube
     }
 
-    public Vec3i getPosition() {
-        return chunkPos;
+    val cubesBySides = HashMap<BooleanArray, MutableList<Cube>>()
+
+    fun clear() {
+        cubesBySides.clear()
     }
 
-    public void clear() {
-        cubesBySides.clear();
+    val isInFOV: Boolean
+        get() {
+            val posRelToCam: Vec3i = Vec3i.subtract(Vec3i.multiply(position, CHUNK_SIZE), Camera.position!!.toVec3i())
+            val rotY: Float = Camera.rotation!!.y - 180
+            val cosRY = cos(Math.toRadians(rotY.toDouble()))
+            val sinRY = sin(Math.toRadians(rotY.toDouble()))
+            val cosRX = cos(Math.toRadians(Camera.rotation!!.x.toDouble()))
+            val sinRX = sin(Math.toRadians(Camera.rotation!!.x.toDouble()))
+            val x = (posRelToCam.x * cosRY - posRelToCam.z * sinRY) * cosRX + posRelToCam.y * sinRX
+            val z = (posRelToCam.z * cosRY + posRelToCam.x * sinRY) * cosRX + posRelToCam.y * sinRX
+            val y = posRelToCam.y * cosRX - z * sinRX
+            val maxXOffset: Double = z * Window.width() / Window.height() + CHUNK_SIZE * 2
+            val maxYOffset = z * cosRX + posRelToCam.y * sinRX + CHUNK_SIZE * 2
+            return z > -CHUNK_SIZE * 2 && x < maxXOffset && x > -maxXOffset && y < maxYOffset && y > -maxYOffset
+        }
+
+    companion object {
+        const val CHUNK_SIZE = 12
+        const val CHUNK_SIZE_CUBED = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE
     }
 
-    public boolean isInFOV() {
-        Vec3i posRelToCam = Vec3i.subtract(Vec3i.multiply(chunkPos, CHUNK_SIZE), Camera.position.toVec3i());
-        float rotY = Camera.rotation.y - 180;
-        double cosRY = Math.cos(Math.toRadians(rotY));
-        double sinRY = Math.sin(Math.toRadians(rotY));
-        double cosRX = Math.cos(Math.toRadians(Camera.rotation.x));
-        double sinRX = Math.sin(Math.toRadians(Camera.rotation.x));
-        double x = (posRelToCam.x * cosRY - posRelToCam.z * sinRY) * cosRX + posRelToCam.y * sinRX;
-        double z = (posRelToCam.z * cosRY + posRelToCam.x * sinRY) * cosRX + posRelToCam.y * sinRX;
-        double y = posRelToCam.y * cosRX - z * sinRX;
-        double maxXOffset = z * Window.width() / Window.height() + CHUNK_SIZE * 2;
-        double maxYOffset = z * cosRX + posRelToCam.y * sinRX + CHUNK_SIZE * 2;
-        return z > -CHUNK_SIZE * 2 && x < maxXOffset && x > -maxXOffset && y < maxYOffset && y > -maxYOffset;
-    }
 }

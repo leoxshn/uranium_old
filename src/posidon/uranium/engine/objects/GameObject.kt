@@ -1,20 +1,12 @@
-package posidon.uranium.engine.objects;
+package posidon.uranium.engine.objects
 
-import posidon.uranium.engine.graphics.Model;
-import posidon.uranium.engine.maths.Vec3f;
+import posidon.uranium.engine.graphics.Model
+import posidon.uranium.engine.maths.Vec3f
 
-public class GameObject {
-    public Vec3f position, rotation, scale;
-    public final Model model;
-
-    public GameObject(Model model, Vec3f position, Vec3f rotation, Vec3f scale) {
-        this.position = position;
-        this.rotation = rotation;
-        this.scale = scale;
-        this.model = model;
+class GameObject(val model: Model, var position: Vec3f, var rotation: Vec3f, var scale: Vec3f) {
+    fun tick() {}
+    fun kill() {
+        model.delete()
     }
 
-    public void tick() {}
-
-    public void kill() { model.delete(); }
 }

@@ -1,14 +1,11 @@
-package posidon.uranium.engine.utils;
+package posidon.uranium.engine.utils
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*
 
-public class HashMapUtils {
-    public static int newID(Map map) {
-        int id;
-        do id = new Random().nextInt();
-        while (map.containsKey(id));
-        return id;
+object HashMapUtils {
+    fun newID(map: Map<*, *>): Int {
+        var id: Int
+        do id = Random().nextInt() while (map.containsKey(id))
+        return id
     }
 }

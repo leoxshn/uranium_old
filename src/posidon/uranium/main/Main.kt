@@ -1,110 +1,110 @@
-package posidon.uranium.main;
+package posidon.uranium.main
 
-import posidon.uranium.client.Client;
-import posidon.uranium.content.Textures;
-import posidon.uranium.engine.graphics.Renderer;
-import posidon.uranium.engine.maths.Vec2f;
-import posidon.uranium.engine.objects.Camera;
-import posidon.uranium.engine.Window;
-import posidon.uranium.engine.maths.Vec3f;
-import posidon.uranium.engine.ui.HotBar;
-import posidon.uranium.engine.ui.LoadingScreen;
+import posidon.uranium.client.Client
+import posidon.uranium.content.Textures
+import posidon.uranium.engine.Window
+import posidon.uranium.engine.graphics.Renderer
+import posidon.uranium.engine.maths.Vec2f
+import posidon.uranium.engine.maths.Vec3f
+import posidon.uranium.engine.objects.Camera
+import posidon.uranium.engine.ui.HotBar
+import posidon.uranium.engine.ui.LoadingScreen
+import kotlin.system.exitProcess
 
-public class Main implements Runnable {
+class Main : Runnable {
 
-    private Window window;
-    private Camera camera = new Camera(new Vec3f(0, 0, 0), new Vec2f(0, 0));
-    public static boolean running = true;
+    private var window: Window? = null
+    private val camera = Camera(Vec3f(0f, 0f, 0f), Vec2f(0f, 0f))
+    var ns = 1000000000 / 60.0
 
-    double ns = 1000000000 / 60.0;
-
-    public void start(int width, int height) {
-        window = new Window(width, height, "uranium");
-        new Thread(this, "uranium").start();
+    fun start(width: Int, height: Int) {
+        window = Window(width, height, "uranium")
+        Thread(this, "uranium").start()
     }
 
-    public void run() {
-        ////START/////////////////////////////////////
-        window.create();
-        Renderer.init();
-        LoadingScreen loadingScreen = new LoadingScreen();
-        render();
-        boolean success = Client.start("localhost", 2512);
+    override fun run() { ////START/////////////////////////////////////
+        window!!.create()
+        Renderer.init()
+        val loadingScreen = LoadingScreen()
+        render()
+        val success: Boolean = Client.start("localhost", 2512)
         if (!success) {
-            loadingScreen.setBackgroundPath("res/textures/ui/couldnt_connect.png");
-            while (window.isOpen()) render();
-            kill();
+            loadingScreen.setBackgroundPath("res/textures/ui/couldnt_connect.png")
+            while (window!!.isOpen) render()
+            kill()
         }
-        Textures.set(null);
-        long lastTime = System.nanoTime();
-        double delta = 0;
-        new Thread(new BackgroundThread()).start();
-        new Thread(new CameraThread()).start();
-        Renderer.updateBlocks();
-        loadingScreen.visible = false;
-
+        Textures.set(null)
+        var lastTime = System.nanoTime()
+        var delta = 0.0
+        Thread(BackgroundThread()).start()
+        Thread(CameraThread()).start()
+        Renderer.updateBlocks()
+        loadingScreen.visible = false
         ////GUI///////////////////////////////////////
-        new HotBar();
-
+        HotBar()
         ////LOOP//////////////////////////////////////
-        while(window.isOpen() && running) {
-            long now = System.nanoTime();
-            delta += (now - lastTime) / ns;
-            lastTime = now;
-            render();
+        while (window!!.isOpen && running) {
+            val now = System.nanoTime()
+            delta += (now - lastTime) / ns
+            lastTime = now
+            render()
             if (delta > 6) {
-                Renderer.updateBlocks();
-                delta = 0;
+                Renderer.updateBlocks()
+                delta = 0.0
             }
         }
-        kill();
+        kill()
         //////////////////////////////////////////////
     }
 
-    private class BackgroundThread implements Runnable {
-        @Override public void run() {
-            long lastTime = System.nanoTime();
-            double delta = 0;
-            while(running) {
-                long now = System.nanoTime();
-                delta += (now - lastTime) / ns;
-                lastTime = now;
-                while(delta >= 1) {
-                    Renderer.bg();
-                    Globals.tick();
-                    delta--;
+    private inner class BackgroundThread : Runnable {
+        override fun run() {
+            var lastTime = System.nanoTime()
+            var delta = 0.0
+            while (running) {
+                val now = System.nanoTime()
+                delta += (now - lastTime) / ns
+                lastTime = now
+                while (delta >= 1) {
+                    Renderer.bg()
+                    Globals.tick()
+                    delta--
                 }
             }
         }
     }
 
-    private class CameraThread implements Runnable {
-        @Override public void run() {
-            long lastTime = System.nanoTime();
-            double delta = 0;
-            while(running) {
-                long now = System.nanoTime();
-                delta += (now - lastTime) / ns;
-                lastTime = now;
-                while(delta >= 1) {
-                    camera.tick();
-                    delta--;
+    private inner class CameraThread : Runnable {
+        override fun run() {
+            var lastTime = System.nanoTime()
+            var delta = 0.0
+            while (running) {
+                val now = System.nanoTime()
+                delta += (now - lastTime) / ns
+                lastTime = now
+                while (delta >= 1) {
+                    camera.tick()
+                    delta--
                 }
             }
         }
     }
 
-    private void render() {
-        window.update();
-        Renderer.render();
-        window.swapBuffers();
+    private fun render() {
+        window!!.update()
+        Renderer.render()
+        window!!.swapBuffers()
     }
 
-    private void kill() {
-        Main.running = false;
-        window.kill();
-        Renderer.kill();
-        Client.kill();
-        System.exit(0);
+    private fun kill() {
+        running = false
+        window!!.kill()
+        Renderer.kill()
+        Client.kill()
+        exitProcess(0)
+    }
+
+    companion object {
+        var running = true
     }
 }

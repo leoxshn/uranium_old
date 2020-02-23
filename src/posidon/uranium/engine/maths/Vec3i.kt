@@ -1,43 +1,39 @@
-package posidon.uranium.engine.maths;
+package posidon.uranium.engine.maths
 
-import java.util.Objects;
+import java.util.*
+import kotlin.math.abs
+import kotlin.math.sqrt
 
-public class Vec3i {
-    public int x, y, z;
+class Vec3i(var x: Int, var y: Int, var z: Int) {
 
-    public Vec3i(int x, int y, int z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    operator fun set(x: Int, y: Int, z: Int) {
+        this.x = x
+        this.y = y
+        this.z = z
     }
 
-    public void set(int x, int y, int z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Vec3i) return false
+        return other.x == x && other.y == y && other.z == z
     }
 
-    public static Vec3i sum(Vec3i a, Vec3i b) { return new Vec3i(a.x + b.x, a.y + b.y, a.z + b.z); }
-    public static Vec3i subtract(Vec3i a, Vec3i b) { return new Vec3i(a.x - b.x, a.y - b.y, a.z - b.z); }
-    public static Vec3i multiply(Vec3i a, Vec3i b) { return new Vec3i(a.x * b.x, a.y * b.y, a.z * b.z); }
-    public static Vec3i multiply(Vec3i a, int b) { return new Vec3i(a.x * b, a.y * b, a.z * b); }
-    public static Vec3i divide(Vec3i a, Vec3i b) { return new Vec3i(a.x / b.x, a.y / b.y, a.z / b.z); }
-    public static Vec3i divide(Vec3i a, int b) { return new Vec3i(a.x / b, a.y / b, a.z / b); }
-    public static Vec3i modulus(Vec3i a, int b) { return new Vec3i(Math.abs(a.x % b), Math.abs(a.y % b), Math.abs(a.z % b)); }
-    public static Vec3i remainder(Vec3i a, int b) { return new Vec3i(a.x % b, a.y % b, a.z % b); }
-    public static float length(Vec3i v) { return (float) Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z); }
-    public static Vec3i normalize(Vec3i v) { return Vec3i.divide(v, (int) Vec3i.length(v)); }
-    public static int dot(Vec3i a, Vec3i b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+    override fun hashCode() = Objects.hash(x, y, z)
+    override fun toString() = "[$x, $y, $z]"
+    fun toVec3f() = Vec3f(x.toFloat(), y.toFloat(), z.toFloat())
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Vec3i)) return false;
-        Vec3i vec3F = (Vec3i) o;
-        return vec3F.x == x && vec3F.y == y && vec3F.z == z;
+    companion object {
+        fun sum(a: Vec3i, b: Vec3i?) = Vec3i(a.x + b!!.x, a.y + b.y, a.z + b.z)
+        fun subtract(a: Vec3i, b: Vec3i) = Vec3i(a.x - b.x, a.y - b.y, a.z - b.z)
+        fun multiply(a: Vec3i, b: Vec3i) = Vec3i(a.x * b.x, a.y * b.y, a.z * b.z)
+        fun multiply(a: Vec3i?, b: Int) = Vec3i(a!!.x * b, a.y * b, a.z * b)
+        fun divide(a: Vec3i, b: Vec3i) = Vec3i(a.x / b.x, a.y / b.y, a.z / b.z)
+        fun divide(a: Vec3i, b: Int) = Vec3i(a.x / b, a.y / b, a.z / b)
+        fun modulus(a: Vec3i, b: Int) = Vec3i(abs(a.x % b), abs(a.y % b), abs(a.z % b))
+        fun remainder(a: Vec3i, b: Int) = Vec3i(a.x % b, a.y % b, a.z % b)
+        fun length(v: Vec3i) = sqrt(v.x * v.x + v.y * v.y + (v.z * v.z).toDouble()).toFloat()
+        fun normalize(v: Vec3i) = divide(v, length(v).toInt())
+        fun dot(a: Vec3i, b: Vec3i) = a.x * b.x + a.y * b.y + a.z * b.z
     }
-    @Override public int hashCode() { return Objects.hash(x, y, z); }
-    @Override public String toString() { return "["+x+", "+y+", "+z+"]"; }
 
-    public Vec3f toVec3f() { return new Vec3f(x, y, z); }
 }

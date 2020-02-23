@@ -1,7 +1,8 @@
-package posidon.uranium.main;
+package posidon.uranium.main
 
-public class Launcher {
-    public static void main(String[] args) {
-        new Main().start(800, 600);
+object Launcher {
+    @JvmStatic
+    fun main(args: Array<String>) {
+        Main().start(800, 600)
     }
 }

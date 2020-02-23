@@ -1,31 +1,29 @@
-package posidon.uranium.engine.maths;
+package posidon.uranium.engine.maths
 
-import java.util.Objects;
+import java.util.*
+import kotlin.math.sqrt
 
-public class Vec2f {
-    public float x, y;
+class Vec2f(var x: Float, var y: Float) {
 
-    public Vec2f(float x, float y) {
-        this.x = x;
-        this.y = y;
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Vec2f) return false
+        return other.x.compareTo(x) == 0 && other.y.compareTo(y) == 0
     }
 
-    public static Vec2f sum(Vec2f a, Vec2f b) { return new Vec2f(a.x + b.x, a.y + b.y); }
-    public static Vec2f subtract(Vec2f a, Vec2f b) { return new Vec2f(a.x - b.x, a.y - b.y); }
-    public static Vec2f multiply(Vec2f a, Vec2f b) { return new Vec2f(a.x * b.x, a.y * b.y); }
-    public static Vec2f multiply(Vec2f a, float b) { return new Vec2f(a.x * b, a.y * b); }
-    public static Vec2f divide(Vec2f a, Vec2f b) { return new Vec2f(a.x / b.x, a.y / b.y); }
-    public static Vec2f divide(Vec2f a, float b) { return new Vec2f(a.x / b, a.y / b); }
-    public static float length(Vec2f v) { return (float)Math.sqrt(v.x*v.x + v.y*v.y); }
-    public static Vec2f normalize(Vec2f v) { return Vec2f.divide(v, Vec2f.length(v)); }
-    public static float dot(Vec2f a, Vec2f b) { return a.x * b.x + a.y * b.y; }
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Vec2f)) return false;
-        Vec2f v = (Vec2f) o;
-        return Float.compare(v.x, x) == 0 && Float.compare(v.y, y) == 0;
+    override fun hashCode() = Objects.hash(x, y)
+    override fun toString() = "[$x, $y]"
+
+    companion object {
+        fun sum(a: Vec2f?, b: Vec2f) = Vec2f(a!!.x + b.x, a.y + b.y)
+        fun subtract(a: Vec2f, b: Vec2f) = Vec2f(a.x - b.x, a.y - b.y)
+        fun multiply(a: Vec2f, b: Vec2f) = Vec2f(a.x * b.x, a.y * b.y)
+        fun multiply(a: Vec2f, b: Float) = Vec2f(a.x * b, a.y * b)
+        fun divide(a: Vec2f, b: Vec2f) = Vec2f(a.x / b.x, a.y / b.y)
+        fun divide(a: Vec2f, b: Float) = Vec2f(a.x / b, a.y / b)
+        fun length(v: Vec2f) = sqrt(v.x * v.x + v.y * v.y)
+        fun normalize(v: Vec2f) = divide(v, length(v))
+        fun dot(a: Vec2f, b: Vec2f) = a.x * b.x + a.y * b.y
     }
-    @Override public int hashCode() { return Objects.hash(x, y); }
-    @Override public String toString() { return "["+x+", "+y+"]"; }
+
 }

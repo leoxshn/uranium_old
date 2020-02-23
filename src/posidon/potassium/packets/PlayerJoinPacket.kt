@@ -1,15 +1,12 @@
-package posidon.potassium.packets;
+package posidon.potassium.packets
 
-import java.io.Serializable;
+import java.io.Serializable
 
-public class PlayerJoinPacket implements Serializable {
-    private static final long serialVersionUID = 1;
-    public int id;
-    public String name;
-    public Object player;
+class PlayerJoinPacket(var id: Int, var name: String) : Serializable {
+    var player: Any? = null
 
-    public PlayerJoinPacket(int id, String name) {
-        this.id = id;
-        this.name = name;
+    companion object {
+        private const val serialVersionUID: Long = 1
     }
+
 }

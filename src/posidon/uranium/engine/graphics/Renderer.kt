@@ -1,51 +1,49 @@
-package posidon.uranium.engine.graphics;
+package posidon.uranium.engine.graphics
 
-import posidon.potassium.universe.block.Block;
-import posidon.uranium.content.Textures;
-import posidon.uranium.engine.Window;
-import posidon.uranium.engine.maths.Matrix4f;
-import posidon.uranium.engine.maths.Vec3i;
-import posidon.uranium.engine.objects.Camera;
-import posidon.uranium.engine.objects.Chunk;
-import posidon.uranium.engine.objects.Cube;
-import posidon.uranium.engine.objects.GameObject;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL30;
-import posidon.uranium.engine.utils.Tuple;
-import posidon.uranium.engine.ui.View;
-import posidon.uranium.main.Globals;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL13
+import org.lwjgl.opengl.GL15
+import org.lwjgl.opengl.GL30
+import posidon.potassium.universe.block.Block
+import posidon.uranium.content.Textures
+import posidon.uranium.engine.Window
+import posidon.uranium.engine.maths.Matrix4f
+import posidon.uranium.engine.maths.Vec3i
+import posidon.uranium.engine.objects.Camera
+import posidon.uranium.engine.objects.Chunk
+import posidon.uranium.engine.objects.Cube
+import posidon.uranium.engine.objects.GameObject
+import posidon.uranium.engine.ui.View
+import posidon.uranium.engine.utils.Tuple
+import posidon.uranium.main.Globals
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedQueue
 
-public class Renderer {
-    private static Shader mainShader;
-    private static Shader blockShader;
-    private static Shader uiShader;
-    private static final ConcurrentHashMap<Model, List<GameObject>> objects = new ConcurrentHashMap<>();
-    public static final ArrayList<View> ui = new ArrayList<>();
-    public static final ConcurrentHashMap<Vec3i, Chunk> chunks = new ConcurrentHashMap<>();
-    private static ConcurrentLinkedQueue<Tuple<Tuple<Vec3i, Vec3i>, Block>> blockQueue = new ConcurrentLinkedQueue<>();
-    public static Matrix4f viewMatrix = Matrix4f.view(Camera.position, Camera.rotation);
-
-    public static void init() {
-        mainShader = new Shader("/shaders/mainVertex.glsl", "/shaders/mainFragment.glsl");
-        mainShader.create();
-        blockShader = new Shader("/shaders/blockVertex.glsl", "/shaders/blockFragment.glsl");
-        blockShader.create();
-        uiShader = new Shader("/shaders/viewVertex.glsl", "/shaders/viewFragment.glsl");
-        uiShader.create();
-        View.init();
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glCullFace(GL11.GL_BACK);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+object Renderer {
+    private var mainShader: Shader? = null
+    private var blockShader: Shader? = null
+    private var uiShader: Shader? = null
+    private val objects = ConcurrentHashMap<Model?, MutableList<GameObject>>()
+    val ui = ArrayList<View?>()
+    val chunks = ConcurrentHashMap<Vec3i?, Chunk>()
+    private val blockQueue = ConcurrentLinkedQueue<Tuple<Tuple<Vec3i, Vec3i>, Block?>>()
+    var viewMatrix: Matrix4f = Matrix4f.view(Camera.position, Camera.rotation)
+    fun init() {
+        mainShader = Shader("/shaders/mainVertex.glsl", "/shaders/mainFragment.glsl")
+        mainShader!!.create()
+        blockShader = Shader("/shaders/blockVertex.glsl", "/shaders/blockFragment.glsl")
+        blockShader!!.create()
+        uiShader = Shader("/shaders/viewVertex.glsl", "/shaders/viewFragment.glsl")
+        uiShader!!.create()
+        View.init()
+        GL11.glEnable(GL11.GL_CULL_FACE)
+        GL11.glCullFace(GL11.GL_BACK)
+        GL11.glEnable(GL11.GL_BLEND)
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
     }
 
-    public static void render() {
-        /*mainShader.bind();
+    fun render() { /*mainShader.bind();
         mainShader.setUniform("skyColor", Globals.skyColor);
         mainShader.setUniform("ambientLight", Globals.ambientLight);
         mainShader.setUniform("projection", Window.getProjectionMatrix());
@@ -67,88 +65,82 @@ public class Renderer {
             GL30.glDisableVertexAttribArray(1);
             GL30.glBindVertexArray(0);
         }*/
-
-        blockShader.bind();
-        blockShader.setUniform("skyColor", Globals.skyColor);
-        blockShader.setUniform("ambientLight", Globals.ambientLight);
-        blockShader.setUniform("projection", Window.getProjectionMatrix());
-        blockShader.setUniform("view", viewMatrix);
-        for (Vec3i chunkPos : chunks.keySet()) if (chunks.get(chunkPos).isInFOV()) {
-            Chunk chunk = chunks.get(chunkPos);
-            for (boolean[] sides : chunk.cubesBySides.keySet()) {
-                GL30.glBindVertexArray(Cube.meshes.get(sides).vaoId);
-                GL30.glEnableVertexAttribArray(0);
-                GL30.glEnableVertexAttribArray(1);
-                GL13.glActiveTexture(GL13.GL_TEXTURE0);
-                GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, Cube.meshes.get(sides).getVbo(2));
-                for (Cube cube : chunk.cubesBySides.get(sides)) {
-                    cube.getTexture().bind();
-                    blockShader.setUniform("emission", cube.emission);
-                    blockShader.setUniform("model", Matrix4f.translate(cube.absolutePosition.toVec3f()));
-                    GL11.glDrawElements(GL11.GL_TRIANGLES, cube.getMesh().vertexCount, GL11.GL_UNSIGNED_INT, 0);
+        blockShader!!.bind()
+        blockShader!!.setUniform("skyColor", Globals.skyColor)
+        blockShader!!.setUniform("ambientLight", Globals.ambientLight)
+        blockShader!!.setUniform("projection", Window.projectionMatrix)
+        blockShader!!.setUniform("view", viewMatrix)
+        for (chunkPos in chunks.keys) if (chunks[chunkPos]!!.isInFOV) {
+            val chunk = chunks[chunkPos]
+            for (sides in chunk!!.cubesBySides.keys) {
+                GL30.glBindVertexArray(Cube.meshes[sides]!!.vaoId)
+                GL30.glEnableVertexAttribArray(0)
+                GL30.glEnableVertexAttribArray(1)
+                GL13.glActiveTexture(GL13.GL_TEXTURE0)
+                GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, Cube.meshes[sides]!!.getVbo(2))
+                for (cube in chunk.cubesBySides[sides]!!) {
+                    cube.texture!!.bind()
+                    blockShader!!.setUniform("emission", cube.emission)
+                    blockShader!!.setUniform("model", Matrix4f.translate(cube.absolutePosition.toVec3f()))
+                    GL11.glDrawElements(GL11.GL_TRIANGLES, cube.mesh!!.vertexCount, GL11.GL_UNSIGNED_INT, 0)
                 }
             }
         }
-
-        uiShader.bind();
-        GL30.glBindVertexArray(View.getMESH().vaoId);
-        GL30.glEnableVertexAttribArray(0);
-        GL30.glEnableVertexAttribArray(1);
-        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, View.getMESH().getVbo(2));
-        GL13.glActiveTexture(GL13.GL_TEXTURE0);
-        for (View view : ui)
-            if (view.visible)
-                view.render(uiShader);
+        uiShader!!.bind()
+        GL30.glBindVertexArray(View.MESH.vaoId)
+        GL30.glEnableVertexAttribArray(0)
+        GL30.glEnableVertexAttribArray(1)
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, View.MESH.getVbo(2))
+        GL13.glActiveTexture(GL13.GL_TEXTURE0)
+        for (view in ui) if (view!!.visible) view.render(uiShader)
     }
 
-    public static void updateBlocks() {
-        for (int i = 0; i < blockQueue.size(); i++) {
-            Tuple<Tuple<Vec3i, Vec3i>, Block> tuple = blockQueue.poll();
-            actuallySetBlock(tuple.get1(), tuple.get0());
+    fun updateBlocks() {
+        for (i in blockQueue.indices) {
+            val tuple = blockQueue.poll()
+            actuallySetBlock(tuple.get1(), tuple.get0())
         }
     }
 
-    public static void bg() {
-        chunks.keySet().removeIf(chunkPos -> {
-            if (Vec3i.length(Vec3i.subtract(Vec3i.multiply(chunkPos, Chunk.CHUNK_SIZE), Camera.position.toVec3i())) > 200) {
-                chunks.get(chunkPos).clear();
-                return true;
-            }
-            return false;
-        });
+    fun bg() {
+        chunks.keys.removeIf { chunkPos: Vec3i? ->
+            if (Vec3i.length(Vec3i.subtract(Vec3i.multiply(chunkPos, Chunk.CHUNK_SIZE), Camera.position!!.toVec3i())) > 200) {
+                chunks[chunkPos]!!.clear()
+                true
+            } else false
+        }
     }
 
-    public static void setBlock(Block block, Vec3i posInChunk, Vec3i chunkPos) {
-        blockQueue.add(new Tuple<>(new Tuple<>(posInChunk, chunkPos), block));
+    fun setBlock(block: Block?, posInChunk: Vec3i, chunkPos: Vec3i) {
+        blockQueue.add(Tuple(Tuple(posInChunk, chunkPos), block))
     }
 
-    private static void actuallySetBlock(Block block, Tuple<Vec3i, Vec3i> positions) {
-        if (chunks.get(positions.get1()) == null) chunks.put(positions.get1(), new Chunk(positions.get1()));
-        Cube cube = chunks.get(positions.get1()).getCube(positions.get0());
-        if (cube != null) cube.getChunk().cubesBySides.get(cube.getSides()).remove(cube);
-        if (block == null) chunks.get(positions.get1()).setCube(null, positions.get0());
-        else chunks.get(positions.get1()).setCube(new Cube(block, positions.get0(), positions.get1()), positions.get0());
+    private fun actuallySetBlock(block: Block?, positions: Tuple<Vec3i, Vec3i>) {
+        if (chunks[positions.get1()] == null) chunks[positions.get1()] = Chunk(positions.get1())
+        val cube = chunks[positions.get1()]!!.getCube(positions.get0())
+        cube?.chunk?.cubesBySides?.get(cube.sides)?.remove(cube)
+        if (block == null) chunks[positions.get1()]!!.setCube(null, positions.get0()) else chunks[positions.get1()]!!.setCube(Cube(block, positions.get0(), positions.get1()), positions.get0())
     }
 
-    public static void add(GameObject obj) {
-        Model model = obj.model;
-        List<GameObject> batch = objects.get(model);
+    fun add(obj: GameObject) {
+        val model = obj.model
+        val batch = objects[model]
         if (batch == null) {
-            List<GameObject> newBatch = new ArrayList<>();
-            newBatch.add(obj);
-            objects.put(model, newBatch);
-        } else { batch.add(obj); }
+            val newBatch: MutableList<GameObject> = ArrayList()
+            newBatch.add(obj)
+            objects[model] = newBatch
+        } else batch.add(obj)
     }
 
-    public static void kill() {
-        mainShader.kill();
-        blockShader.kill();
-        objects.clear();
-        for (Chunk chunk : chunks.values()) chunk.clear();
-        chunks.clear();
-        blockQueue.clear();
-        ui.clear();
-        Cube.kill();
-        Textures.clear();
+    fun kill() {
+        mainShader!!.kill()
+        blockShader!!.kill()
+        objects.clear()
+        for (chunk in chunks.values) chunk.clear()
+        chunks.clear()
+        blockQueue.clear()
+        ui.clear()
+        Cube.kill()
+        Textures.clear()
     }
 }

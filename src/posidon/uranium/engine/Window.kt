@@ -1,115 +1,111 @@
-package posidon.uranium.engine;
+package posidon.uranium.engine
 
-import posidon.uranium.engine.maths.Matrix4f;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.glfw.GLFWWindowSizeCallback;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
-import posidon.uranium.main.Globals;
+import org.lwjgl.glfw.GLFW
+import org.lwjgl.glfw.GLFWWindowSizeCallback
+import org.lwjgl.opengl.GL
+import org.lwjgl.opengl.GL11
+import posidon.uranium.engine.maths.Matrix4f
+import posidon.uranium.main.Globals
 
-import static org.lwjgl.opengl.GL11.GL_TRUE;
-
-public class Window {
-    private static int width, height;
-    private static String title;
-    private long window;
-    private Input input;
-    private GLFWWindowSizeCallback resizeListener;
-    private boolean fullscreen;
-    private int[] pos = new int[2];
-    private static Matrix4f projection;
-    static boolean mouseLocked;
-
-    public Window(int width, int height, String title) {
-        Window.width = width;
-        Window.height = height;
-        Window.title = title;
-        projection = Matrix4f.projection(70f, (float)width/(float)height, 0.2f, 200);
-    }
-
-    public void create() {
+class Window(width: Int, height: Int, title: String?) {
+    private var window: Long = 0
+    private var input: Input? = null
+    private var resizeListener: GLFWWindowSizeCallback? = null
+    var isFullscreen = false
+        set(fullscreen) {
+            if (fullscreen) {
+                GLFW.glfwGetWindowPos(window, intArrayOf(pos[0]), intArrayOf(pos[1]))
+                val videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor())
+                GLFW.glfwSetWindowMonitor(window, GLFW.glfwGetPrimaryMonitor(), 0, 0, videoMode!!.width(), videoMode.height(), 0)
+            } else GLFW.glfwSetWindowMonitor(window, 0, pos[0], pos[1], width, height, 0)
+            field = fullscreen
+        }
+    private val pos = IntArray(2)
+    fun create() {
         if (!GLFW.glfwInit()) {
-            System.err.println("[ERROR]: GLFW wasn't inititalized");
-            return;
+            System.err.println("[ERROR]: GLFW wasn't inititalized")
+            return
         }
-
-        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
-        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);
-        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
-        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-        input = new Input(this);
-        window = GLFW.glfwCreateWindow(width, height, title, 0, 0);
-        if (window == 0) {
-            System.err.println("[ERROR]: Window wasn't created");
-            return;
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3)
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2)
+        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE)
+        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL11.GL_TRUE)
+        input = Input(this)
+        window = GLFW.glfwCreateWindow(width, height, title, 0, 0)
+        if (window == 0L) {
+            System.err.println("[ERROR]: Window wasn't created")
+            return
         }
-
-        GLFWVidMode videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-        pos[0] = (videoMode.width() - width) / 2;
-        pos[1] = (videoMode.height() - height) / 2;
-        GLFW.glfwSetWindowPos(window, pos[0], pos[1]);
-        GLFW.glfwSetWindowSizeLimits(window, 600, 300, -1, -1);
-        GLFW.glfwMakeContextCurrent(window);
-        GL.createCapabilities();
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-
-        createCallbacks();
-
-        GLFW.glfwShowWindow(window);
-        GLFW.glfwSwapInterval(1);
+        val videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor())
+        pos[0] = (videoMode!!.width() - width) / 2
+        pos[1] = (videoMode.height() - height) / 2
+        GLFW.glfwSetWindowPos(window, pos[0], pos[1])
+        GLFW.glfwSetWindowSizeLimits(window, 600, 300, -1, -1)
+        GLFW.glfwMakeContextCurrent(window)
+        GL.createCapabilities()
+        GL11.glEnable(GL11.GL_DEPTH_TEST)
+        createCallbacks()
+        GLFW.glfwShowWindow(window)
+        GLFW.glfwSwapInterval(1)
     }
 
-    private void createCallbacks() {
-        resizeListener = new GLFWWindowSizeCallback() {
-            @Override
-            public void invoke(long window, int w, int h) {
-                width = w;
-                height = h;
-                projection = Matrix4f.projection(70f, (float)width/(float)height, 0.2f, 400);
-                GL11.glViewport(0, 0, width, height);
+    private fun createCallbacks() {
+        resizeListener = object : GLFWWindowSizeCallback() {
+            override fun invoke(window: Long, w: Int, h: Int) {
+                width = w
+                height = h
+                projection = Matrix4f.projection(70f, width.toFloat() / height.toFloat(), 0.2f, 400f)
+                GL11.glViewport(0, 0, width, height)
             }
-        };
-        GLFW.glfwSetKeyCallback(window, input.getKeyListener());
-        GLFW.glfwSetCursorPosCallback(window, input.getCursorListener());
-        GLFW.glfwSetMouseButtonCallback(window, input.getMouseButtonListener());
-        GLFW.glfwSetScrollCallback(window, input.getScrollListener());
-        GLFW.glfwSetWindowSizeCallback(window, resizeListener);
+        }
+        GLFW.glfwSetKeyCallback(window, input!!.keyListener)
+        GLFW.glfwSetCursorPosCallback(window, input!!.cursorListener)
+        GLFW.glfwSetMouseButtonCallback(window, input!!.mouseButtonListener)
+        GLFW.glfwSetScrollCallback(window, input!!.scrollListener)
+        GLFW.glfwSetWindowSizeCallback(window, resizeListener)
     }
 
-    public void update() {
-        GL11.glClearColor(Globals.skyColor.x, Globals.skyColor.y, Globals.skyColor.z, 1.0f);
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-        GLFW.glfwPollEvents();
-    }
-    public void swapBuffers() { GLFW.glfwSwapBuffers(window); }
-    public boolean isOpen() { return !GLFW.glfwWindowShouldClose(window); }
-    public void kill() {
-        input.kill();
-        resizeListener.free();
-        GLFW.glfwDestroyWindow(window);
-        GLFW.glfwTerminate();
+    fun update() {
+        GL11.glClearColor(Globals.skyColor.x, Globals.skyColor.y, Globals.skyColor.z, 1.0f)
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT)
+        GLFW.glfwPollEvents()
     }
 
-    public void setMouseLocked(boolean lock) {
-        if (lock) GLFW.glfwSetCursorPos(window, Input.getCurX(), Input.getCurY());
-        mouseLocked = lock;
-        GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, lock ? GLFW.GLFW_CURSOR_DISABLED : GLFW.GLFW_CURSOR_NORMAL);
+    fun swapBuffers() = GLFW.glfwSwapBuffers(window)
+
+    val isOpen get() = !GLFW.glfwWindowShouldClose(window)
+
+    fun kill() {
+        input!!.kill()
+        resizeListener!!.free()
+        GLFW.glfwDestroyWindow(window)
+        GLFW.glfwTerminate()
     }
 
-    public static int width() { return width; }
-    public static int height() { return height; }
-    public boolean isFullscreen() { return fullscreen; }
-    public void setFullscreen(boolean fullscreen) {
-        if (fullscreen) {
-            GLFW.glfwGetWindowPos(window, new int[]{pos[0]}, new int[]{pos[1]});
-            GLFWVidMode videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-            GLFW.glfwSetWindowMonitor(window, GLFW.glfwGetPrimaryMonitor(), 0, 0, videoMode.width(), videoMode.height(), 0);
-        } else GLFW.glfwSetWindowMonitor(window, 0, pos[0], pos[1], width, height, 0);
-        this.fullscreen = fullscreen;
+    fun setMouseLocked(lock: Boolean) {
+        if (lock) GLFW.glfwSetCursorPos(window, Input.curX, Input.curY)
+        mouseLocked = lock
+        GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, if (lock) GLFW.GLFW_CURSOR_DISABLED else GLFW.GLFW_CURSOR_NORMAL)
     }
-    public static Matrix4f getProjectionMatrix() {
-        return (Input.isKeyDown(GLFW.GLFW_KEY_C)) ? Matrix4f.projection(20f, (float)width/(float)height, 0.2f, 200) : projection;
+
+    companion object {
+        private var width = 0
+        private var height = 0
+        private var title: String? = null
+        private lateinit var projection: Matrix4f
+        var mouseLocked = false
+
+        fun width() = width
+        fun height() = height
+
+        val projectionMatrix: Matrix4f
+            get() = if (Input.isKeyDown(GLFW.GLFW_KEY_C)) Matrix4f.projection(20f, width.toFloat() / height.toFloat(), 0.2f, 200f) else projection
+    }
+
+    init {
+        Companion.width = width
+        Companion.height = height
+        Companion.title = title
+        projection = Matrix4f.projection(70f, width.toFloat() / height.toFloat(), 0.2f, 200f)
     }
 }

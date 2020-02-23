@@ -1,15 +1,18 @@
-package posidon.potassium.packets;
+package posidon.potassium.packets
 
-import java.io.Serializable;
-import java.util.HashMap;
+import java.io.Serializable
+import java.util.*
 
-public class Packet extends HashMap<String, Object> implements Serializable {
-    private static final long serialVersionUID = 1;
-    public int getInt(Object key) { return (int) super.get(key); }
-    public double getDouble(Object key) { return (double) super.get(key); }
-    public float getFloat(Object key) { return (float) super.get(key); }
-    public String getString(Object key) {
-        try { return (String) super.get(key); }
-        catch (Exception e) { return null; }
+class Packet : HashMap<String?, Any?>(), Serializable {
+
+    fun getInt(key: String?) = super.get(key) as Int
+    fun getDouble(key: String?) = super.get(key) as Double
+    fun getFloat(key: String?) = super.get(key) as Float
+    fun getString(key: String?) =
+            try { super.get(key) as String? }
+            catch (e: Exception) { null }
+
+    companion object {
+        private const val serialVersionUID: Long = 1
     }
 }

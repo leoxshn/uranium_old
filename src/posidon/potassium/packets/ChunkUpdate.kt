@@ -1,10 +1,15 @@
-package posidon.potassium.packets;
+package posidon.potassium.packets
 
-import posidon.potassium.universe.block.Block;
-import java.io.Serializable;
+import posidon.potassium.universe.block.Block
+import java.io.Serializable
 
-public class ChunkUpdate implements Serializable {
-    private static final long serialVersionUID = 1;
-    public int x, y, z;
-    public Block[] blocks;
+class ChunkUpdate : Serializable {
+    var x = 0
+    var y = 0
+    var z = 0
+    lateinit var blocks: Array<Block>
+
+    companion object {
+        private const val serialVersionUID: Long = 1
+    }
 }

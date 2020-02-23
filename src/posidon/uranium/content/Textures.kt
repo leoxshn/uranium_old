@@ -1,24 +1,22 @@
-package posidon.uranium.content;
+package posidon.uranium.content
 
-import posidon.uranium.engine.graphics.Texture;
+import posidon.uranium.engine.graphics.Texture
+import java.util.*
 
-import java.util.HashMap;
-
-public class Textures {
-    public static HashMap<String, Texture> blocks = new HashMap<>();
-    private static String[] blockNames = {
+object Textures {
+    var blocks = HashMap<String, Texture>()
+    private val blockNames = arrayOf(
             "grass", "stone"
-    };
+    )
 
-    public static void set(String path) {
+    fun set(path: String?) {
         if (path == null) {
-            for (String name : blockNames)
-                blocks.put(name, new Texture("res/textures/block/" + name + ".png"));
+            for (name in blockNames) blocks[name] = Texture("res/textures/block/$name.png")
         }
     }
 
-    public static void clear() {
-        for (Texture texture : blocks.values()) texture.delete();
-        blocks.clear();
+    fun clear() {
+        for (texture in blocks.values) texture.delete()
+        blocks.clear()
     }
 }

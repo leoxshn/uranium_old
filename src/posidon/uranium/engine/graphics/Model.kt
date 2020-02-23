@@ -1,22 +1,21 @@
-package posidon.uranium.engine.graphics;
+package posidon.uranium.engine.graphics
 
-public class Model {
+class Model {
+    val mesh: Mesh
+    val texture: Texture
 
-    public final Mesh mesh;
-    public final Texture texture;
-
-    public Model(Mesh mesh, Texture texture) {
-        this.mesh = mesh;
-        this.texture = texture;
+    constructor(mesh: Mesh, texture: Texture) {
+        this.mesh = mesh
+        this.texture = texture
     }
 
-    public Model(float[] positions, int[] indices, float[] uv, Texture texture) {
-        this.mesh = new Mesh(positions, indices, uv);
-        this.texture = texture;
+    constructor(positions: FloatArray, indices: IntArray, uv: FloatArray, texture: Texture) {
+        mesh = Mesh(positions, indices, uv)
+        this.texture = texture
     }
 
-    public void delete() {
-        mesh.delete();
-        texture.delete();
+    fun delete() {
+        mesh.delete()
+        texture.delete()
     }
 }

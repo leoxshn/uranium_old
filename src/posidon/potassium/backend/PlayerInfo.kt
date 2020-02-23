@@ -1,8 +1,13 @@
-package posidon.potassium.backend;
+package posidon.potassium.backend
 
-import java.io.Serializable;
+import java.io.Serializable
 
-public class PlayerInfo implements Serializable {
-    private static final long serialVersionUID = 1;
-    public float x, y, z;
+class PlayerInfo : Serializable {
+    var x = 0f
+    var y = 0f
+    var z = 0f
+
+    companion object {
+        private const val serialVersionUID: Long = 1
+    }
 }

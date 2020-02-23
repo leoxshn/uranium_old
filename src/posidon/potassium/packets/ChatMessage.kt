@@ -1,11 +1,11 @@
-package posidon.potassium.packets;
+package posidon.potassium.packets
 
-import java.io.Serializable;
+import java.io.Serializable
 
-public class ChatMessage implements Serializable {
+class ChatMessage(var message: String) : Serializable {
 
-    private static final long serialVersionUID = 1;
-    public String message;
+    companion object {
+        private const val serialVersionUID: Long = 1
+    }
 
-    public ChatMessage(String message) { this.message = message; }
 }

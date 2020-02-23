@@ -1,49 +1,43 @@
-package posidon.uranium.engine.maths;
+package posidon.uranium.engine.maths
 
-import java.util.Objects;
+import java.util.*
+import kotlin.math.sqrt
 
-public class Vec3f {
-    public float x, y, z;
+class Vec3f(var x: Float, var y: Float, var z: Float) {
 
-    public Vec3f(float x, float y, float z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    operator fun set(x: Float, y: Float, z: Float) {
+        this.x = x
+        this.y = y
+        this.z = z
     }
 
-    public void set(float x, float y, float z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Vec3f) return false
+        return other.x.compareTo(x) == 0 && other.y.compareTo(y) == 0 && other.z.compareTo(z) == 0
     }
 
-    public static Vec3f sum(Vec3f a, Vec3f b) { return new Vec3f(a.x + b.x, a.y + b.y, a.z + b.z); }
-    public static Vec3f subtract(Vec3f a, Vec3f b) { return new Vec3f(a.x - b.x, a.y - b.y, a.z - b.z); }
-    public static Vec3f multiply(Vec3f a, Vec3f b) { return new Vec3f(a.x * b.x, a.y * b.y, a.z * b.z); }
-    public static Vec3f multiply(Vec3f a, float b) { return new Vec3f(a.x * b, a.y * b, a.z * b); }
-    public static Vec3f divide(Vec3f a, Vec3f b) { return new Vec3f(a.x / b.x, a.y / b.y, a.z / b.z); }
-    public static Vec3f divide(Vec3f a, float b) { return new Vec3f(a.x / b, a.y / b, a.z / b); }
-    public static float length(Vec3f v) { return (float)Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z); }
-    public static Vec3f normalize(Vec3f v) { return Vec3f.divide(v, Vec3f.length(v)); }
-    public static float dot(Vec3f a, Vec3f b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
-    public static Vec3f blend(Vec3f v1, Vec3f v2, float ratio) {
-        final float inverseRation = 1f - ratio;
-        float r = (v1.x * ratio) + (v2.x * inverseRation);
-        float g = (v1.y * ratio) + (v2.y * inverseRation);
-        float b = (v1.z * ratio) + (v2.z * inverseRation);
-        return new Vec3f(r, g, b);
-    }
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Vec3f)) return false;
-        Vec3f vec3F = (Vec3f) o;
-        return Float.compare(vec3F.x, x) == 0 &&
-               Float.compare(vec3F.y, y) == 0 &&
-               Float.compare(vec3F.z, z) == 0;
-    }
-    @Override public int hashCode() { return Objects.hash(x, y, z); }
-    @Override public String toString() { return "["+x+", "+y+", "+z+"]"; }
+    override fun hashCode() = Objects.hash(x, y, z)
+    override fun toString() = "[$x, $y, $z]"
+    fun toVec3i() = Vec3i(x.toInt(), y.toInt(), z.toInt())
 
-    public Vec3i toVec3i() { return new Vec3i((int)x, (int)y, (int)z); }
+    companion object {
+        fun sum(a: Vec3f, b: Vec3f) = Vec3f(a.x + b.x, a.y + b.y, a.z + b.z)
+        fun subtract(a: Vec3f, b: Vec3f) = Vec3f(a.x - b.x, a.y - b.y, a.z - b.z)
+        fun multiply(a: Vec3f, b: Vec3f) = Vec3f(a.x * b.x, a.y * b.y, a.z * b.z)
+        fun multiply(a: Vec3f, b: Float) = Vec3f(a.x * b, a.y * b, a.z * b)
+        fun divide(a: Vec3f, b: Vec3f) = Vec3f(a.x / b.x, a.y / b.y, a.z / b.z)
+        fun divide(a: Vec3f, b: Float) = Vec3f(a.x / b, a.y / b, a.z / b)
+        fun length(v: Vec3f) = sqrt(v.x * v.x + v.y * v.y + (v.z * v.z).toDouble()).toFloat()
+        fun normalize(v: Vec3f) = divide(v, length(v))
+        fun dot(a: Vec3f, b: Vec3f) = a.x * b.x + a.y * b.y + a.z * b.z
+        fun blend(v1: Vec3f, v2: Vec3f, ratio: Float): Vec3f {
+            val inverseRation = 1f - ratio
+            val r = v1.x * ratio + v2.x * inverseRation
+            val g = v1.y * ratio + v2.y * inverseRation
+            val b = v1.z * ratio + v2.z * inverseRation
+            return Vec3f(r, g, b)
+        }
+    }
+
 }

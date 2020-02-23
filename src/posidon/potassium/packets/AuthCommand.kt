@@ -1,15 +1,11 @@
-package posidon.potassium.packets;
+package posidon.potassium.packets
 
-import java.io.Serializable;
+import java.io.Serializable
 
-public class AuthCommand implements Serializable {
+class AuthCommand(var key: String, var cmd: Array<String>) : Serializable {
 
-    private static final long serialVersionUID = 1;
-    public String key;
-    public String[] cmd;
-
-    public AuthCommand(String key, String[] cmd) {
-        this.key = key;
-        this.cmd = cmd;
+    companion object {
+        private const val serialVersionUID: Long = 1
     }
+
 }
