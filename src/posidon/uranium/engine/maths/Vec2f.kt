@@ -14,16 +14,13 @@ class Vec2f(var x: Float, var y: Float) {
     override fun hashCode() = Objects.hash(x, y)
     override fun toString() = "[$x, $y]"
 
-    companion object {
-        fun sum(a: Vec2f?, b: Vec2f) = Vec2f(a!!.x + b.x, a.y + b.y)
-        fun subtract(a: Vec2f, b: Vec2f) = Vec2f(a.x - b.x, a.y - b.y)
-        fun multiply(a: Vec2f, b: Vec2f) = Vec2f(a.x * b.x, a.y * b.y)
-        fun multiply(a: Vec2f, b: Float) = Vec2f(a.x * b, a.y * b)
-        fun divide(a: Vec2f, b: Vec2f) = Vec2f(a.x / b.x, a.y / b.y)
-        fun divide(a: Vec2f, b: Float) = Vec2f(a.x / b, a.y / b)
-        fun length(v: Vec2f) = sqrt(v.x * v.x + v.y * v.y)
-        fun normalize(v: Vec2f) = divide(v, length(v))
-        fun dot(a: Vec2f, b: Vec2f) = a.x * b.x + a.y * b.y
-    }
-
+    operator fun plus(other: Vec2f) = Vec2f(x + other.x, y + other.y)
+    operator fun minus(other: Vec2f) = Vec2f(x - other.x, y - other.y)
+    operator fun times(other: Vec2f) = Vec2f(x * other.x, y * other.y)
+    operator fun times(other: Float) = Vec2f(x * other, y * other)
+    operator fun div(other: Vec2f) = Vec2f(x / other.x, y / other.y)
+    operator fun div(float: Float) = Vec2f(x / float, y / float)
+    fun length() = sqrt(x * x + y * y)
+    fun normalize() = this / length()
+    fun dot(other: Vec2f) = x * other.x + y * other.y
 }

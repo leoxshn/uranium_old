@@ -12,7 +12,7 @@ abstract class LitView(position: Vec2f, size: Vec2f, background: Texture) : View
     override fun render(shader: Shader?) {
         background.bind()
         shader!!.setUniform("ambientLight", Vec3f(1f, 1f, 1f))
-        shader.setUniform("model", Matrix4f.transform(position, Vec2f(size.x / Window.width() * Window.height(), size.y)))
+        shader.setUniform("model", Matrix4f.transform(position, Vec2f(size.x / Window.width * Window.height, size.y)))
         GL11.glDrawElements(GL11.GL_TRIANGLES, MESH.vertexCount, GL11.GL_UNSIGNED_INT, 0)
     }
 }

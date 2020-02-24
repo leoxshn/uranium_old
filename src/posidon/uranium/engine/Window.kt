@@ -8,9 +8,11 @@ import posidon.uranium.engine.maths.Matrix4f
 import posidon.uranium.main.Globals
 
 class Window(width: Int, height: Int, title: String?) {
+
     private var window: Long = 0
     private var input: Input? = null
     private var resizeListener: GLFWWindowSizeCallback? = null
+
     var isFullscreen = false
         set(fullscreen) {
             if (fullscreen) {
@@ -21,6 +23,7 @@ class Window(width: Int, height: Int, title: String?) {
             field = fullscreen
         }
     private val pos = IntArray(2)
+
     fun create() {
         if (!GLFW.glfwInit()) {
             System.err.println("[ERROR]: GLFW wasn't inititalized")
@@ -89,14 +92,11 @@ class Window(width: Int, height: Int, title: String?) {
     }
 
     companion object {
-        private var width = 0
-        private var height = 0
+        var width = 0; private set
+        var height = 0; private set
         private var title: String? = null
         private lateinit var projection: Matrix4f
         var mouseLocked = false
-
-        fun width() = width
-        fun height() = height
 
         val projectionMatrix: Matrix4f
             get() = if (Input.isKeyDown(GLFW.GLFW_KEY_C)) Matrix4f.projection(20f, width.toFloat() / height.toFloat(), 0.2f, 200f) else projection

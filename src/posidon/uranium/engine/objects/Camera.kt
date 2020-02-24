@@ -30,7 +30,7 @@ class Camera(position: Vec3f?, rotation: Vec2f?) {
         )
         val dx = (curX - oldCurX).toFloat()
         val dy = (curY - oldCurY).toFloat()
-        rotation = Vec2f.sum(rotation, Vec2f(-sensitivity * dy, -sensitivity * dx))
+        rotation = rotation!! + Vec2f(-sensitivity * dy, -sensitivity * dx)
         if (rotation!!.x > 90) rotation!!.x = 90f else if (rotation!!.x < -90) rotation!!.x = -90f
         if (rotation!!.y > 360) rotation!!.y -= 360f else if (rotation!!.y < 0) rotation!!.y += 360f
         if (keys[0]) {

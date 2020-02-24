@@ -5,7 +5,7 @@ import kotlin.math.sqrt
 
 class Vec3f(var x: Float, var y: Float, var z: Float) {
 
-    operator fun set(x: Float, y: Float, z: Float) {
+    fun set(x: Float, y: Float, z: Float) {
         this.x = x
         this.y = y
         this.z = z
@@ -22,15 +22,6 @@ class Vec3f(var x: Float, var y: Float, var z: Float) {
     fun toVec3i() = Vec3i(x.toInt(), y.toInt(), z.toInt())
 
     companion object {
-        fun sum(a: Vec3f, b: Vec3f) = Vec3f(a.x + b.x, a.y + b.y, a.z + b.z)
-        fun subtract(a: Vec3f, b: Vec3f) = Vec3f(a.x - b.x, a.y - b.y, a.z - b.z)
-        fun multiply(a: Vec3f, b: Vec3f) = Vec3f(a.x * b.x, a.y * b.y, a.z * b.z)
-        fun multiply(a: Vec3f, b: Float) = Vec3f(a.x * b, a.y * b, a.z * b)
-        fun divide(a: Vec3f, b: Vec3f) = Vec3f(a.x / b.x, a.y / b.y, a.z / b.z)
-        fun divide(a: Vec3f, b: Float) = Vec3f(a.x / b, a.y / b, a.z / b)
-        fun length(v: Vec3f) = sqrt(v.x * v.x + v.y * v.y + (v.z * v.z).toDouble()).toFloat()
-        fun normalize(v: Vec3f) = divide(v, length(v))
-        fun dot(a: Vec3f, b: Vec3f) = a.x * b.x + a.y * b.y + a.z * b.z
         fun blend(v1: Vec3f, v2: Vec3f, ratio: Float): Vec3f {
             val inverseRation = 1f - ratio
             val r = v1.x * ratio + v2.x * inverseRation
@@ -40,4 +31,13 @@ class Vec3f(var x: Float, var y: Float, var z: Float) {
         }
     }
 
+    operator fun plus(other: Vec3f) = Vec3f(x + other.x, y + other.y, z + other.z)
+    operator fun minus(other: Vec3f) = Vec3f(x - other.x, y - other.y, z - other.z)
+    operator fun times(other: Vec3f) = Vec3f(x * other.x, y * other.y, z * other.z)
+    operator fun times(other: Float) = Vec3f(x * other, y * other, z * other)
+    operator fun div(other: Vec3f) = Vec3f(x / other.x, y / other.y, z / other.z)
+    operator fun div(float: Float) = Vec3f(x / float, y / float, z / float)
+    fun length() = sqrt(x * x + y * y + (z * z).toDouble()).toFloat()
+    fun normalize() = this / length()
+    fun dot(other: Vec3f) = x * other.x + y * other.y + z * other.z
 }

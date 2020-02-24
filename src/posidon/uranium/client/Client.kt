@@ -46,11 +46,9 @@ class Client : Runnable {
             try {
                 output!!.writeObject(o)
                 output!!.flush()
-            } catch (e: SocketException) { /*TODO: when server server stops*/
-                kill()
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
+            catch (e: SocketException) { kill() }
+            catch (e: Exception) { e.printStackTrace() }
         }
 
         fun kill() {

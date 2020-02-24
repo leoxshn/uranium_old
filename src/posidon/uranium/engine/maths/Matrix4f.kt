@@ -8,20 +8,18 @@ class Matrix4f {
     val all = FloatArray(SIZE * SIZE)
 
     operator fun get(x: Int, y: Int) = all[y * SIZE + x]
-
-    operator fun set(x: Int, y: Int, value: Float) {
-        all[y * SIZE + x] = value
-    }
+    operator fun set(x: Int, y: Int, value: Float) { all[y * SIZE + x] = value }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Matrix4f) return false
-        return Arrays.equals(all, other.all)
+        return all.contentEquals(other.all)
     }
 
     override fun hashCode(): Int = all.contentHashCode()
 
     companion object {
+
         const val SIZE = 4
 
         fun identity(): Matrix4f {

@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 
 object Renderer {
+
     private var mainShader: Shader? = null
     private var blockShader: Shader? = null
     private var uiShader: Shader? = null
@@ -29,6 +30,7 @@ object Renderer {
     val chunks = ConcurrentHashMap<Vec3i?, Chunk>()
     private val blockQueue = ConcurrentLinkedQueue<Tuple<Tuple<Vec3i, Vec3i>, Block?>>()
     var viewMatrix: Matrix4f = Matrix4f.view(Camera.position, Camera.rotation)
+
     fun init() {
         mainShader = Shader("/shaders/mainVertex.glsl", "/shaders/mainFragment.glsl")
         mainShader!!.create()
@@ -98,28 +100,28 @@ object Renderer {
     fun updateBlocks() {
         for (i in blockQueue.indices) {
             val tuple = blockQueue.poll()
-            actuallySetBlock(tuple.get1(), tuple.get0())
+            actuallySetBlock(tuple.b, tuple.a)
         }
     }
 
     fun bg() {
         chunks.keys.removeIf { chunkPos: Vec3i? ->
-            if (Vec3i.length(Vec3i.subtract(Vec3i.multiply(chunkPos, Chunk.CHUNK_SIZE), Camera.position!!.toVec3i())) > 200) {
+            if ((chunkPos!! * Chunk.CHUNK_SIZE - Camera.position!!.toVec3i()).length() > 200) {
                 chunks[chunkPos]!!.clear()
                 true
             } else false
         }
     }
 
-    fun setBlock(block: Block?, posInChunk: Vec3i, chunkPos: Vec3i) {
+    operator fun set(posInChunk: Vec3i, chunkPos: Vec3i, block: Block?) {
         blockQueue.add(Tuple(Tuple(posInChunk, chunkPos), block))
     }
 
     private fun actuallySetBlock(block: Block?, positions: Tuple<Vec3i, Vec3i>) {
-        if (chunks[positions.get1()] == null) chunks[positions.get1()] = Chunk(positions.get1())
-        val cube = chunks[positions.get1()]!!.getCube(positions.get0())
+        if (chunks[positions.b] == null) chunks[positions.b] = Chunk(positions.b)
+        val cube = chunks[positions.b]!![positions.a]
         cube?.chunk?.cubesBySides?.get(cube.sides)?.remove(cube)
-        if (block == null) chunks[positions.get1()]!!.setCube(null, positions.get0()) else chunks[positions.get1()]!!.setCube(Cube(block, positions.get0(), positions.get1()), positions.get0())
+        if (block == null) chunks[positions.b]!![positions.a] = null else chunks[positions.b]!![positions.a] = Cube(block, positions.a, positions.a)
     }
 
     fun add(obj: GameObject) {

@@ -22,18 +22,16 @@ class Vec3i(var x: Int, var y: Int, var z: Int) {
     override fun toString() = "[$x, $y, $z]"
     fun toVec3f() = Vec3f(x.toFloat(), y.toFloat(), z.toFloat())
 
-    companion object {
-        fun sum(a: Vec3i, b: Vec3i?) = Vec3i(a.x + b!!.x, a.y + b.y, a.z + b.z)
-        fun subtract(a: Vec3i, b: Vec3i) = Vec3i(a.x - b.x, a.y - b.y, a.z - b.z)
-        fun multiply(a: Vec3i, b: Vec3i) = Vec3i(a.x * b.x, a.y * b.y, a.z * b.z)
-        fun multiply(a: Vec3i?, b: Int) = Vec3i(a!!.x * b, a.y * b, a.z * b)
-        fun divide(a: Vec3i, b: Vec3i) = Vec3i(a.x / b.x, a.y / b.y, a.z / b.z)
-        fun divide(a: Vec3i, b: Int) = Vec3i(a.x / b, a.y / b, a.z / b)
-        fun modulus(a: Vec3i, b: Int) = Vec3i(abs(a.x % b), abs(a.y % b), abs(a.z % b))
-        fun remainder(a: Vec3i, b: Int) = Vec3i(a.x % b, a.y % b, a.z % b)
-        fun length(v: Vec3i) = sqrt(v.x * v.x + v.y * v.y + (v.z * v.z).toDouble()).toFloat()
-        fun normalize(v: Vec3i) = divide(v, length(v).toInt())
-        fun dot(a: Vec3i, b: Vec3i) = a.x * b.x + a.y * b.y + a.z * b.z
-    }
-
+    operator fun plus(other: Vec3i) = Vec3i(x + other.x, y + other.y, z + other.z)
+    operator fun minus(other: Vec3i) = Vec3i(x - other.x, y - other.y, z - other.z)
+    operator fun times(other: Vec3i) = Vec3i(x * other.x, y * other.y, z * other.z)
+    operator fun times(other: Float) = Vec3f(x * other, y * other, z * other)
+    operator fun times(other: Int) = Vec3i(x * other, y * other, z * other)
+    operator fun div(other: Vec3i) = Vec3i(x / other.x, y / other.y, z / other.z)
+    operator fun div(float: Float) = Vec3f(x / float, y / float, z / float)
+    operator fun div(float: Int) = Vec3i(x / float, y / float, z / float)
+    operator fun rem(b: Int) = Vec3i(x % b, y % b, z % b)
+    fun length() = sqrt(x * x + y * y + (z * z).toDouble()).toFloat()
+    fun normalize() = this / length()
+    fun dot(other: Vec3i) = x * other.x + y * other.y + z * other.z
 }

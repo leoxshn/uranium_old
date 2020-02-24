@@ -1,6 +1,7 @@
 package posidon.uranium.engine.graphics
 
 class Model {
+
     val mesh: Mesh
     val texture: Texture
 

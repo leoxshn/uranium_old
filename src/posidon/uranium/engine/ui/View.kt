@@ -10,11 +10,11 @@ import posidon.uranium.engine.maths.Matrix4f
 import posidon.uranium.engine.maths.Vec2f
 import posidon.uranium.main.Globals
 
-abstract class View internal constructor(var position: Vec2f, var size: Vec2f, protected var background: Texture) {
+abstract class View(var position: Vec2f, var size: Vec2f, protected var background: Texture) {
 
     var visible = true
 
-    open fun setBackgroundPath(path: String?) {
+    fun setBackgroundPath(path: String?) {
         background.delete()
         background = Texture(path)
     }
@@ -27,13 +27,12 @@ abstract class View internal constructor(var position: Vec2f, var size: Vec2f, p
     open fun render(shader: Shader?) {
         background.bind()
         shader!!.setUniform("ambientLight", Globals.ambientLight)
-        shader.setUniform("model", Matrix4f.transform(position, Vec2f(size.x / Window.width() * Window.height(), size.y)))
+        shader.setUniform("model", Matrix4f.transform(position, Vec2f(size.x / Window.width * Window.height, size.y)))
         GL11.glDrawElements(GL11.GL_TRIANGLES, MESH.vertexCount, GL11.GL_UNSIGNED_INT, 0)
     }
 
     companion object {
-        lateinit var MESH: Mesh
-            private set
+        lateinit var MESH: Mesh private set
 
         fun init() {
             MESH = Mesh(floatArrayOf( /*V0*/
@@ -44,7 +43,5 @@ abstract class View internal constructor(var position: Vec2f, var size: Vec2f, p
         }
     }
 
-    init {
-        Renderer.ui.add(this)
-    }
+    init { Renderer.ui.add(this) }
 }

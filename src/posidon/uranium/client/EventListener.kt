@@ -30,10 +30,9 @@ object EventListener {
                 val posInChunk = Vec3i(
                         i / (Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE),
                         i / Chunk.CHUNK_SIZE % Chunk.CHUNK_SIZE,
-                        i % Chunk.CHUNK_SIZE
-                )
+                        i % Chunk.CHUNK_SIZE)
                 val chunkPos = Vec3i(event.x, event.y, event.z)
-                Renderer.setBlock(block, posInChunk, chunkPos)
+                Renderer[posInChunk, chunkPos] = block
                 i++
             }
         }

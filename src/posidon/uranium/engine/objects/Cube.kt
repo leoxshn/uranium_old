@@ -10,7 +10,7 @@ import java.util.*
 
 class Cube(block: Block, private var positionInChunk: Vec3i?, var chunkPos: Vec3i?) {
 
-    var absolutePosition: Vec3i = Vec3i.sum(Vec3i.multiply(chunkPos, Chunk.CHUNK_SIZE), positionInChunk)
+    var absolutePosition: Vec3i = chunkPos!! * Chunk.CHUNK_SIZE + positionInChunk!!
     var name: String? = block.name
     var hardness: Float = block.hardness
     var emission: Float = block.emission
@@ -59,12 +59,12 @@ class Cube(block: Block, private var positionInChunk: Vec3i?, var chunkPos: Vec3
     fun update() {
         try {
             val s = BooleanArray(6)
-            s[2] = positionInChunk!!.x == Chunk.CHUNK_SIZE - 1 || chunk!!.getCube(positionInChunk!!.x + 1, positionInChunk!!.y, positionInChunk!!.z) == null
-            s[3] = positionInChunk!!.x == 0 || chunk!!.getCube(positionInChunk!!.x - 1, positionInChunk!!.y, positionInChunk!!.z) == null
-            s[1] = positionInChunk!!.y == Chunk.CHUNK_SIZE - 1 || chunk!!.getCube(positionInChunk!!.x, positionInChunk!!.y + 1, positionInChunk!!.z) == null
-            s[4] = positionInChunk!!.y == 0 || chunk!!.getCube(positionInChunk!!.x, positionInChunk!!.y - 1, positionInChunk!!.z) == null
-            s[0] = positionInChunk!!.z == Chunk.CHUNK_SIZE - 1 || chunk!!.getCube(positionInChunk!!.x, positionInChunk!!.y, positionInChunk!!.z + 1) == null
-            s[5] = positionInChunk!!.z == 0 || chunk!!.getCube(positionInChunk!!.x, positionInChunk!!.y, positionInChunk!!.z - 1) == null
+            s[2] = positionInChunk!!.x == Chunk.CHUNK_SIZE - 1 || chunk!![positionInChunk!!.x + 1, positionInChunk!!.y, positionInChunk!!.z] == null
+            s[3] = positionInChunk!!.x == 0 || chunk!![positionInChunk!!.x - 1, positionInChunk!!.y, positionInChunk!!.z] == null
+            s[1] = positionInChunk!!.y == Chunk.CHUNK_SIZE - 1 || chunk!![positionInChunk!!.x, positionInChunk!!.y + 1, positionInChunk!!.z] == null
+            s[4] = positionInChunk!!.y == 0 || chunk!![positionInChunk!!.x, positionInChunk!!.y - 1, positionInChunk!!.z] == null
+            s[0] = positionInChunk!!.z == Chunk.CHUNK_SIZE - 1 || chunk!![positionInChunk!!.x, positionInChunk!!.y, positionInChunk!!.z + 1] == null
+            s[5] = positionInChunk!!.z == 0 || chunk!![positionInChunk!!.x, positionInChunk!!.y, positionInChunk!!.z - 1] == null
             sides = s
         } catch (e: Exception) {
             println("something weird going on here!")
