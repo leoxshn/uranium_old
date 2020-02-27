@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: posidon.uranium.main.Launcher
+Main-Class: posidon.uranium.main.Main
 

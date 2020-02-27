@@ -121,7 +121,7 @@ object Renderer {
         if (chunks[positions.b] == null) chunks[positions.b] = Chunk(positions.b)
         val cube = chunks[positions.b]!![positions.a]
         cube?.chunk?.cubesBySides?.get(cube.sides)?.remove(cube)
-        if (block == null) chunks[positions.b]!![positions.a] = null else chunks[positions.b]!![positions.a] = Cube(block, positions.a, positions.a)
+        if (block == null) chunks[positions.b]!![positions.a] = null else chunks[positions.b]!![positions.a] = Cube(block, positions.a, positions.b)
     }
 
     fun add(obj: GameObject) {

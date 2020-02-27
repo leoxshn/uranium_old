@@ -6,10 +6,12 @@ import java.util.*
 object Textures {
 
     var blocks = HashMap<String, Texture>()
-    private val blockNames = arrayOf("grass", "stone")
+    private val blockNames = arrayOf("grass", "stone", "wood", "moonstone", "moonstone_bricks", "lightbricks")
 
     fun set(path: String?) {
-        if (path == null) for (name in blockNames) blocks[name] = Texture("res/textures/block/$name.png")
+        if (path == null)
+            for (name in blockNames)
+                blocks[name] = Texture("res/textures/block/$name.png")
     }
 
     fun clear() {

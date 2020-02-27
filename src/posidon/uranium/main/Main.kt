@@ -11,18 +11,17 @@ import posidon.uranium.engine.ui.HotBar
 import posidon.uranium.engine.ui.LoadingScreen
 import kotlin.system.exitProcess
 
-class Main : Runnable {
+object Main {
 
+    var running = true
     private var window: Window? = null
     private val camera = Camera(Vec3f(0f, 0f, 0f), Vec2f(0f, 0f))
-    var ns = 1000000000 / 60.0
+    private const val ns = 1000000000 / 60.0
 
-    fun start(width: Int, height: Int) {
-        window = Window(width, height, "uranium")
-        Thread(this, "uranium").start()
-    }
-
-    override fun run() { ////START/////////////////////////////////////
+    @JvmStatic
+    fun main(args: Array<String>) {
+        ////START/////////////////////////////////////
+        window = Window(800, 600, "uranium")
         window!!.create()
         Renderer.init()
         val loadingScreen = LoadingScreen()
@@ -57,7 +56,7 @@ class Main : Runnable {
         //////////////////////////////////////////////
     }
 
-    private inner class BackgroundThread : Runnable {
+    private class BackgroundThread : Runnable {
         override fun run() {
             var lastTime = System.nanoTime()
             var delta = 0.0
@@ -74,7 +73,7 @@ class Main : Runnable {
         }
     }
 
-    private inner class CameraThread : Runnable {
+    private class CameraThread : Runnable {
         override fun run() {
             var lastTime = System.nanoTime()
             var delta = 0.0
@@ -102,9 +101,5 @@ class Main : Runnable {
         Renderer.kill()
         Client.kill()
         exitProcess(0)
-    }
-
-    companion object {
-        var running = true
     }
 }

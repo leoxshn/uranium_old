@@ -4,25 +4,21 @@ import posidon.potassium.universe.block.Block
 import posidon.uranium.content.Textures
 import posidon.uranium.engine.graphics.Mesh
 import posidon.uranium.engine.graphics.Renderer
-import posidon.uranium.engine.graphics.Texture
 import posidon.uranium.engine.maths.Vec3i
 import java.util.*
 
-class Cube(block: Block, private var positionInChunk: Vec3i?, var chunkPos: Vec3i?) {
+class Cube(block: Block, var positionInChunk: Vec3i, var chunkPos: Vec3i) {
 
-    var absolutePosition: Vec3i = chunkPos!! * Chunk.CHUNK_SIZE + positionInChunk!!
-    var name: String? = block.name
+    val absolutePosition inline get() = chunkPos * Chunk.CHUNK_SIZE + positionInChunk
+    var name: String = block.name
     var hardness: Float = block.hardness
     var emission: Float = block.emission
 
     val mesh get() = meshes[sides]
     val texture get() = Textures.blocks[name]
 
-    override fun hashCode(): Int {
-        var result = Objects.hash(absolutePosition, name, hardness, emission)
-        result = 31 * result + sides.contentHashCode()
-        return result
-    }
+    override fun hashCode() =
+            Objects.hash(chunkPos, positionInChunk, name, hardness, emission) + sides.contentHashCode()
 
     var sides = BooleanArray(6)
         set(value) {
@@ -59,22 +55,34 @@ class Cube(block: Block, private var positionInChunk: Vec3i?, var chunkPos: Vec3
     fun update() {
         try {
             val s = BooleanArray(6)
-            s[2] = positionInChunk!!.x == Chunk.CHUNK_SIZE - 1 || chunk!![positionInChunk!!.x + 1, positionInChunk!!.y, positionInChunk!!.z] == null
-            s[3] = positionInChunk!!.x == 0 || chunk!![positionInChunk!!.x - 1, positionInChunk!!.y, positionInChunk!!.z] == null
-            s[1] = positionInChunk!!.y == Chunk.CHUNK_SIZE - 1 || chunk!![positionInChunk!!.x, positionInChunk!!.y + 1, positionInChunk!!.z] == null
-            s[4] = positionInChunk!!.y == 0 || chunk!![positionInChunk!!.x, positionInChunk!!.y - 1, positionInChunk!!.z] == null
-            s[0] = positionInChunk!!.z == Chunk.CHUNK_SIZE - 1 || chunk!![positionInChunk!!.x, positionInChunk!!.y, positionInChunk!!.z + 1] == null
-            s[5] = positionInChunk!!.z == 0 || chunk!![positionInChunk!!.x, positionInChunk!!.y, positionInChunk!!.z - 1] == null
+            s[2] = positionInChunk.x == Chunk.CHUNK_SIZE - 1 || chunk!![positionInChunk.x + 1, positionInChunk.y, positionInChunk.z] == null
+            s[3] = positionInChunk.x == 0 || chunk!![positionInChunk.x - 1, positionInChunk.y, positionInChunk.z] == null
+            s[1] = positionInChunk.y == Chunk.CHUNK_SIZE - 1 || chunk!![positionInChunk.x, positionInChunk.y + 1, positionInChunk.z] == null
+            s[4] = positionInChunk.y == 0 || chunk!![positionInChunk.x, positionInChunk.y - 1, positionInChunk.z] == null
+            s[0] = positionInChunk.z == Chunk.CHUNK_SIZE - 1 || chunk!![positionInChunk.x, positionInChunk.y, positionInChunk.z + 1] == null
+            s[5] = positionInChunk.z == 0 || chunk!![positionInChunk.x, positionInChunk.y, positionInChunk.z - 1] == null
             sides = s
         } catch (e: Exception) {
+            e.printStackTrace()
             println("something weird going on here!")
             sides = booleanArrayOf(true, true, true, true, true, true)
         }
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as Cube
+        if (chunkPos != other.chunkPos) return false
+        if (positionInChunk != other.positionInChunk) return false
+        if (name != other.name) return false
+        if (hardness != other.hardness) return false
+        if (emission != other.emission) return false
+        return true
+    }
+
     companion object {
 
-        var textures = HashMap<String, Texture>()
         var meshes = HashMap<BooleanArray, Mesh?>()
 
         fun kill() = meshes.clear()

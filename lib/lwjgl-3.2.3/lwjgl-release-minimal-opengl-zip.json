@@ -1,7 +1,9 @@
 {
   "build": "release",
   "mode": "zip",
-  "selectedAddons": [],
+  "selectedAddons": [
+    "lwjglx-debug"
+  ],
   "platform": [
     "linux",
     "linux-arm64",
@@ -13,7 +15,7 @@
   "hardcoded": false,
   "javadoc": true,
   "includeJSON": true,
-  "source": false,
+  "source": true,
   "osgi": false,
   "language": "groovy",
   "preset": "minimal-opengl",
